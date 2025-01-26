@@ -1,0 +1,22 @@
+identifier: promicro/supermini_nrf52840
+name: proMicro supermini NRF52840
+type: mcu
+arch: arm
+ram: 256
+flash: 1024
+toolchain:
+  - zephyr
+  - gnuarmemb
+  - xtools
+supported:
+  - adc
+  - gpio
+  - i2c
+  - i2s
+  - pwm
+  - spi
+  - usb_device
+  - usbd
+  - watchdog
+  - netif:openthread
+vendor: promicro

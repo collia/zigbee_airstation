@@ -1,0 +1,7 @@
+board:
+  name: supermini_nrf52840
+  full_name: ProMicro supermini nRF52840
+  vendor: promicro
+  socs:
+  # Physical nRF52840 SoC on PCA10056
+  - name: nrf52840
