@@ -24,7 +24,9 @@ The project is organized into several key directories and files to facilitate de
 2. Copy board in correct path nrf/boards/promicro
 - [https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/applications/nrf5340_audio/doc/adapting_application.html#nrf53-audio-app-adapting]
 3. Build
+```sh
 west build --pristine -b supermini_nrf52840 app
+```
 
 # How to flash
 Connect board to the USB port and double press the reset button to enter the bootloader mode. Then flash the board with the following command:
