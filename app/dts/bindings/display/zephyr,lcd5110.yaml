@@ -1,0 +1,8 @@
+# Copyright (c) 2021 Nordic Semiconductor ASA
+# SPDX-License-Identifier: Apache-2.0
+
+description: lcd5110 display controller
+
+compatible: "zephyr,lcd5110"
+
+include: [mipi-dbi-spi-device.yaml, display-controller.yaml]

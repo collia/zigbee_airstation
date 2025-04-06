@@ -1,11 +1,65 @@
+#include <zephyr/dt-bindings/mipi_dbi/mipi_dbi.h>
+
 &i2c0 {
         gas_sensor: ccs811@5a {
                 status = "okay";
                 compatible = "ams,ccs811";
                 reg = <0x5a>;
-                irq-gpios = <&gpio0 22 GPIO_ACTIVE_LOW>;
-                wake-gpios = <&gpio0 24 GPIO_ACTIVE_LOW>;
+                irq-gpios = <&gpio0 24 GPIO_ACTIVE_LOW>;
+                wake-gpios = <&gpio0 22 GPIO_ACTIVE_LOW>;
                 reset-gpios = <&gpio0 11 GPIO_ACTIVE_LOW>;
                 zephyr,deferred-init;
         };
+        bme280: bme280@76 {
+                compatible = "bosch,bme280";
+                reg = <0x76>;
+                zephyr,deferred-init;
+        };
+};
+&spi1 {
+        status = "okay";
+        pinctrl-0 = <&spi1_default>;
+        #pinctrl-names = "default";
+
+        /*cs-gpios = <&gpio0 2 GPIO_ACTIVE_LOW>;*/
+        cs-gpios = <&gpio0 2 GPIO_ACTIVE_LOW>, <&gpio1 15 GPIO_ACTIVE_LOW>;
+/*
+        # sdhc0: sdhc@0 {
+        #        compatible = "zephyr,sdhc-spi-slot";
+        #        reg = <0>;
+        #        status = "okay";
+        #        spi-max-frequency = <24000000>;
+        #        mmc {
+        #                compatible = "zephyr,sdmmc-disk";
+        #                status = "okay";
+        #        };
+        #};*/
+};
+
+/ {
+
+    mipi_dbi {
+        compatible = "zephyr,mipi-dbi-spi";
+        spi-dev = <&spi1>;
+        dc-gpios = <&gpio1 11 GPIO_ACTIVE_HIGH>;        /* DET */
+        reset-gpios = <&gpio1 13 GPIO_ACTIVE_LOW>;      /* RESX reset */
+        write-only;
+        #address-cells = <1>;
+        #size-cells = <0>;
+        lcd5110: lcd5110@1 {
+                compatible = "zephyr,lcd5110";
+                reg = <1>;
+                width = <84>;
+                height = <48>;
+                mipi-max-frequency = <125000>; /* 125kHz */
+                mipi-mode = <MIPI_DBI_MODE_SPI_4WIRE>;
+                zephyr,deferred-init;
+                status = "okay";
+        };
+    };
+    chosen {
+                zephyr,display = &lcd5110;
+    };
+
+
 };

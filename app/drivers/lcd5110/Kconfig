@@ -1,0 +1,14 @@
+# Configuration options for dummy display
+
+# Copyright (c) 2018 Jan Van Winkel <jan.van_winkel@dxplore.eu>
+# SPDX-License-Identifier: Apache-2.0
+
+config LCD5110
+	bool "LCD5110 display driver"
+	select MIPI_DBI
+	help
+	  Enable lcd5110 display driver compliant with display driver API.
+
+config LCD5110_LOG_LEVEL
+    int "LCD5110 log level"
+    default 3
