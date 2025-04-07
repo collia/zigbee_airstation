@@ -37,7 +37,7 @@ struct lcd5110_data {
  * @return 0 on success, negative error code on failure.
  */
 static int lcd5110_send_cmd(const struct lcd5110_config *config, uint8_t cmd) {
-    LOG_INF("lcd5110_send_cmd %x", cmd);
+    // LOG_INF("lcd5110_send_cmd %x", cmd);
 
     int ret = mipi_dbi_command_write(config->mipi_dbi, &config->dbi_config, cmd,
                                      NULL, 0);
@@ -91,7 +91,7 @@ static int lcd5110_init(const struct device *dev) {
     struct lcd5110_data *disp_data = dev->data;
     const struct lcd5110_config *config = dev->config;
 
-    LOG_INF("Init display %s, %x", dev->name, disp_data);
+    LOG_INF("Init display %s", dev->name);
     disp_data->current_pixel_format = PIXEL_FORMAT_MONO01;
 
     int ret = mipi_dbi_reset(config->mipi_dbi, 100);
@@ -120,21 +120,25 @@ static int lcd5110_write(const struct device *dev, const uint16_t x,
                          const void *buf) {
     const struct lcd5110_config *config = dev->config;
 
-    __ASSERT(desc->width <= desc->pitch, "Pitch is smaller then width");
-    __ASSERT(desc->pitch <= config->width,
-             "Pitch in descriptor is larger than screen size");
-    __ASSERT(desc->height <= config->height,
-             "Height in descriptor is larger than screen size");
-    __ASSERT(x + desc->pitch <= config->width,
-             "Writing outside screen boundaries in horizontal direction");
-    __ASSERT(y + desc->height <= config->height,
-             "Writing outside screen boundaries in vertical direction");
+    /* __ASSERT(desc->width <= desc->pitch, "Pitch is smaller then width");
+     __ASSERT(desc->pitch <= config->width,
+              "Pitch in descriptor is larger than screen size");
+     __ASSERT(desc->height <= config->height,
+              "Height in descriptor is larger than screen size");
+     __ASSERT(x + desc->pitch <= config->width,
+              "Writing outside screen boundaries in horizontal direction");
+     __ASSERT(y + desc->height <= config->height,
+              "Writing outside screen boundaries in vertical direction");
 
-    if (desc->width > desc->pitch || x + desc->pitch > config->width ||
-        y + desc->height > config->height) {
-        return -EINVAL;
-    }
-    __ASSERT(config->mipi_dbi, "mipi_dbi is empty");
+     if (desc->width > desc->pitch || x + desc->pitch > config->width ||
+         y + desc->height > config->height) {
+         return -EINVAL;
+     }
+     __ASSERT(config->mipi_dbi, "mipi_dbi is empty");
+ */
+    lcd5110_send_cmd(config, 0x80 | (x & 0x7f));       // set x coordinate
+    lcd5110_send_cmd(config, 0x40 | ((y / 8) & 0x07)); // set y coordinate
+
     mipi_dbi_write_display(config->mipi_dbi, &config->dbi_config, buf, desc,
                            PIXEL_FORMAT_MONO01);
     return 0;

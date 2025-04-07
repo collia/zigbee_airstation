@@ -1,3 +1,4 @@
+#pragma once
 
 #define LCD5110_FONT_WIDTH 6
 #define LCD5110_FONT_HEIGHT 8

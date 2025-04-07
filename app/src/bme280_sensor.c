@@ -38,89 +38,47 @@ const struct device *bme280_sensor_init(void) {
     return dev;
 }
 
-void bme280_sensor_read(const struct device *dev) {
-    struct sensor_value temp, press, humidity;
+int bme280_sensor_read(const struct device *dev,
+                       const struct bme280_result *result) {
+    // struct sensor_value temp, press, humidity;
     int rc;
     if (dev == NULL) {
         printk("Device is NULL\n");
-        return;
+        return -1;
     }
 
     rc = sensor_sample_fetch(dev);
     if (rc != 0) {
         printk("Failed to fetch sensor data: %d\n", rc);
-        return;
+        return rc;
     }
 
-    rc = sensor_channel_get(dev, SENSOR_CHAN_AMBIENT_TEMP, &temp);
+    rc =
+        sensor_channel_get(dev, SENSOR_CHAN_AMBIENT_TEMP, &result->temperature);
     if (rc == 0) {
-        printk("Temperature: %d.%06d C\n", temp.val1, temp.val2);
+        printk("Temperature: %d.%06d C\n", result->temperature.val1,
+               result->temperature.val2);
     } else {
         printk("Failed to get temperature data: %d\n", rc);
+        return rc;
     }
 
-    rc = sensor_channel_get(dev, SENSOR_CHAN_PRESS, &press);
+    rc = sensor_channel_get(dev, SENSOR_CHAN_PRESS, &result->pressure);
     if (rc == 0) {
-        printk("Pressure: %d.%06d kPa\n", press.val1, press.val2);
+        printk("Pressure: %d.%06d kPa\n", result->pressure.val1,
+               result->pressure.val2);
     } else {
         printk("Failed to get pressure data: %d\n", rc);
+        return rc;
     }
 
-    rc = sensor_channel_get(dev, SENSOR_CHAN_HUMIDITY, &humidity);
+    rc = sensor_channel_get(dev, SENSOR_CHAN_HUMIDITY, &result->humidity);
     if (rc == 0) {
-        printk("Humidity: %d.%06d %%\n", humidity.val1, humidity.val2);
+        printk("Humidity: %d.%06d %%\n", result->humidity.val1,
+               result->humidity.val2);
     } else {
         printk("Failed to get humidity data: %d\n", rc);
-    }
-}
-
-/*
-void bme280_sensor_read(const struct device *dev) {
-    uint8_t buf[256] = {0};
-
-    int rc = sensor_read(&iodev, &ctx, buf, sizeof(buf));
-
-    if (rc != 0) {
-        printk("%s: sensor_read() failed: %d\n", dev->name, rc);
         return rc;
     }
-     // for (size_t i = 0; i < sizeof(buf); i++) {
-     //     if (i % 16 == 0) {
-     //         printf("\n");
-     //     }
-     //     printf(" %02hhx", buf[i]);
-     // }
-    const struct sensor_decoder_api *decoder;
-
-    rc = sensor_get_decoder(dev, &decoder);
-
-    if (rc != 0) {
-        printk("%s: sensor_get_decode() failed: %d\n", dev->name, rc);
-        return rc;
-    }
-
-    uint32_t temp_fit = 0;
-    struct sensor_q31_data temp_data = {0};
-
-    decoder->decode(buf, (struct sensor_chan_spec){SENSOR_CHAN_AMBIENT_TEMP, 0},
-                    &temp_fit, 1, &temp_data);
-
-    uint32_t press_fit = 0;
-    struct sensor_q31_data press_data = {0};
-
-    decoder->decode(buf, (struct sensor_chan_spec){SENSOR_CHAN_PRESS, 0},
-                    &press_fit, 1, &press_data);
-
-    uint32_t hum_fit = 0;
-    struct sensor_q31_data hum_data = {0};
-
-    decoder->decode(buf, (struct sensor_chan_spec){SENSOR_CHAN_HUMIDITY, 0},
-                    &hum_fit, 1, &hum_data);
-
-    printk("temp: %s%d.%d; press: %s%d.%d; humidity: %s%d.%d\n",
-           PRIq_arg(temp_data.readings[0].temperature, 6, temp_data.shift),
-           PRIq_arg(press_data.readings[0].pressure, 6, press_data.shift),
-           PRIq_arg(hum_data.readings[0].humidity, 6, hum_data.shift));
+    return 0;
 }
-
-*/
